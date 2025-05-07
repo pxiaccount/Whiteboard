@@ -5,6 +5,7 @@ export default function Home() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [isErasing, setIsErasing] = useState(false)
   const [color, setColor] = useState("#000")
+  const [size, setSize] = useState(5)
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -41,7 +42,7 @@ export default function Home() {
     const draw = (e: MouseEvent) => {
       if (!isDrawing) return;
       ctx.strokeStyle = isErasing ? "white" : color; // Switch to white for erasing
-      ctx.lineWidth = isErasing ? 10 : 2; // Make the eraser bigger
+      ctx.lineWidth = size; // Make the eraser bigger
       ctx.lineTo(e.clientX, e.clientY);
       ctx.stroke();
       ctx.beginPath();
@@ -68,10 +69,24 @@ export default function Home() {
     };
   }, [isDrawing]);
 
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    canvas.width = canvas.width;
+  }
+
   return (
     <>
-      <input type="color" onChange={(e) => setColor(e.target.value)} value={color} className="w-6" />
-      <button onClick={() => setIsErasing(!isErasing)}>Eraser</button>
+      <div className="border rounded-3xl px-4" style={{ position: "absolute", top: "2%", left: "50%", transform: "translate(-50%, -50%)" }}>
+        <input id="colorChooser" type="color" onChange={(e) => setColor(e.target.value)} value={color} className={`w-6 p-1 rounded-xl mx-2`} />
+        |
+        <button onClick={() => setIsErasing(!isErasing)} className=" mx-2">{isErasing ? "Pen" : "Eraser"}</button>
+        |
+        <button onClick={clearCanvas} className=" mx-2">Clear</button>
+        |
+        <span> Size: </span>
+        <input type="number" className="w-12 text-center border-gray-500 border-1 rounded-xl" value={size} onChange={(e) => setSize(Number(e.target.value))} />
+      </div >
       <canvas
         ref={canvasRef}
         style={{ border: "1px solid #ccc", backgroundColor: "#fff" }}
